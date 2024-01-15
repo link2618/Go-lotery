@@ -41,6 +41,7 @@ func Setuphandlers(s server.Server, e *echo.Echo) {
 	var pre string = "/api/v1/"
 
 	e.GET(pre+"test", handlers.Test(s))
-	e.POST(pre+"insert-new-game", handlers.InsertNewGame(s))
 	e.GET(pre+"generate-game", handlers.GenerateGame(s))
+	e.POST(pre+"insert-new-game", handlers.InsertNewGame(s))
+	e.POST(pre+"search-number", handlers.SearchNumber(s))
 }

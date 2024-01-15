@@ -4,12 +4,16 @@ import (
 	"github.com/link2618/Go-lotery/models"
 )
 
-func IsValidBaloto(baloto models.Baloto) (string, bool) {
-	if len(baloto.Type) == 0 {
+func IsValidBaloto(baloto models.Baloto, validateType bool, validateSerie bool) (string, bool) {
+	if validateType && len(baloto.Type) == 0 {
 		return "El tipo de baloto es obligatorio.", false
 	}
 
-	if baloto.Number1 == 0 || baloto.Number2 == 0 || baloto.Number3 == 0 || baloto.Number4 == 0 || baloto.Number5 == 0 || baloto.Serial == 0 {
+	if baloto.Number1 == 0 || baloto.Number2 == 0 || baloto.Number3 == 0 || baloto.Number4 == 0 || baloto.Number5 == 0 {
+		return "Los números no pueden ser 0 o null", false
+	}
+
+	if validateSerie && baloto.Serial == 0 {
 		return "Los números no pueden ser 0 o null", false
 	}
 
@@ -17,7 +21,7 @@ func IsValidBaloto(baloto models.Baloto) (string, bool) {
 		return "Los números no se encuentran en el rango de 1 a 44.", false
 	}
 
-	if !IsSerialInRange(baloto.Serial) {
+	if validateSerie && !IsSerialInRange(baloto.Serial) {
 		return "El serial no se encuentra en el rango de 1 a 16.", false
 	}
 

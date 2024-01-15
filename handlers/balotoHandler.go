@@ -29,6 +29,11 @@ type GenerateGameResponse struct {
 	Serial  uint8  `json:"serial"`
 }
 
+type SearchNumberResponse struct {
+	State string `json:"state"`
+	Data  []*models.Baloto
+}
+
 func Test(s server.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		response := DefaultResponse{
@@ -53,7 +58,7 @@ func InsertNewGame(s server.Server) echo.HandlerFunc {
 		}
 
 		// Data is being validated
-		msg, isValid := validations.IsValidBaloto(body)
+		msg, isValid := validations.IsValidBaloto(body, true, true)
 		if isValid == false {
 			response := DefaultResponse{
 				State:   "Error",
@@ -115,6 +120,53 @@ func GenerateGame(s server.Server) echo.HandlerFunc {
 			Number4: numbers[3],
 			Number5: numbers[4],
 			Serial:  serie[0],
+		}
+		return c.JSON(http.StatusOK, response)
+	}
+}
+
+func SearchNumber(s server.Server) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var body models.Baloto
+
+		if err := json.NewDecoder(c.Request().Body).Decode(&body); err != nil {
+			response := DefaultResponse{
+				State:   "Error",
+				Message: "Ocurrió un error inesperado",
+			}
+			return c.JSON(http.StatusBadRequest, response)
+		}
+
+		// Data is being validated
+		validateSerie := false
+		serie := []uint8{}
+		if body.Serial != 0 {
+			validateSerie = true
+			serie = append(serie, body.Serial)
+		}
+		msg, isValid := validations.IsValidBaloto(body, false, validateSerie)
+		if isValid == false {
+			response := DefaultResponse{
+				State:   "Error",
+				Message: msg,
+			}
+			return c.JSON(http.StatusBadRequest, response)
+		}
+
+		numbers := []uint8{body.Number1, body.Number2, body.Number3, body.Number4, body.Number5}
+
+		data, err := repository.SearchNumber(c.Request().Context(), numbers, serie...)
+		if err != nil {
+			response := DefaultResponse{
+				State:   "Error",
+				Message: err.Error(),
+			}
+			return c.JSON(http.StatusInternalServerError, response)
+		}
+
+		response := SearchNumberResponse{
+			State: "Success",
+			Data:  data,
 		}
 		return c.JSON(http.StatusOK, response)
 	}

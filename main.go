@@ -42,4 +42,5 @@ func Setuphandlers(s server.Server, e *echo.Echo) {
 
 	e.GET(pre+"test", handlers.Test(s))
 	e.POST(pre+"insert-new-game", handlers.InsertNewGame(s))
+	e.GET(pre+"generate-game", handlers.GenerateGame(s))
 }

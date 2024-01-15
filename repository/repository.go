@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	InsertBaloto(ctx context.Context, baloto *models.Baloto) error
+	NewGameExists(ctx context.Context, numbers []uint8, serie uint8) (bool, error)
 	Close() error
 }
 
@@ -19,6 +20,10 @@ func SetRepository(repository Repository) {
 
 func InsertBaloto(ctx context.Context, baloto *models.Baloto) error {
 	return implementation.InsertBaloto(ctx, baloto)
+}
+
+func NewGameExists(ctx context.Context, numbers []uint8, serie uint8) (bool, error) {
+	return implementation.NewGameExists(ctx, numbers, serie)
 }
 
 func Close() error {
